@@ -82,7 +82,16 @@ fun RegisterScreenRoot(
 
     RegisterScreen(
         state = viewModel.state,
-        onAction = viewModel::onAction
+
+        // this is done by me phillipe did it like onAction = viewModel::onAction
+        // well the problem with this was that the login clickable text didnt work
+
+        onAction = { action ->
+         when(action){
+             RegisterAction.OnLoginClick -> onSignInClick()
+             else -> viewModel::onAction
+         }
+        }
     )
 }
 
@@ -132,8 +141,8 @@ private fun RegisterScreen(
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(
                         tag = "clickable_text",
-                        end = offset,
-                        start = offset
+                        start = offset,
+                        end = offset
                     ).firstOrNull()?.let {
                         onAction(RegisterAction.OnLoginClick)
                     }

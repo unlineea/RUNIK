@@ -44,6 +44,7 @@ fun IntroScreen(
     onAction: (IntroAction) -> Unit
 ) {
     GradientBackground {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
