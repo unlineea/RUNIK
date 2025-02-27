@@ -84,13 +84,15 @@ fun RegisterScreenRoot(
         state = viewModel.state,
 
         // this is done by me phillipe did it like onAction = viewModel::onAction
-        // well the problem with this was that the login clickable text didnt work
+        // well the problem with this was that the login clickable text didn't work
 
         onAction = { action ->
-         when(action){
-             RegisterAction.OnLoginClick -> onSignInClick()
-             else -> viewModel::onAction
-         }
+            when(action){
+                RegisterAction.OnLoginClick -> onSignInClick()
+                else -> viewModel::onAction.invoke(action)
+        //             RegisterAction.OnRegisterClick -> viewModel.onAction(action)
+        //             RegisterAction.OnTogglePasswordVisibilityClick -> viewModel.onAction(action)
+            }
         }
     )
 }
@@ -165,7 +167,7 @@ private fun RegisterScreen(
             RunikPasswordTextField(
                 state = state.password,
                 isPasswordVisible = state.isPasswordVisible,
-                onTogglePasswordVisibility = { RegisterAction.OnTogglePasswordVisibilityClick },
+                onTogglePasswordVisibility = { onAction(RegisterAction.OnTogglePasswordVisibilityClick) },
                 hint = stringResource(id = R.string.password),
                 title = stringResource(id = R.string.password),
                 modifier = Modifier.fillMaxWidth()
