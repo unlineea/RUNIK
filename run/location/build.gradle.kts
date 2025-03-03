@@ -3,11 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.run.location"
+    namespace = "com.example.run.newlocation"
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.bundles.koin)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.google.android.gms.play.services.location)
