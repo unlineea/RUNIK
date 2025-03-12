@@ -12,10 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,9 +34,13 @@ import com.example.run.presentation.R
 import com.example.run.presentation.active_run.components.RunDataCard
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import com.example.core.presentation.designsystem.RunIcon
+import com.example.core.presentation.designsystem.components.RunikActionButton
 import com.example.core.presentation.designsystem.components.RunikDialog
 import com.example.core.presentation.designsystem.components.RunikOutlinedActionButton
+import com.example.run.presentation.active_run.maps.TrackerMap
 import com.example.run.presentation.util.hasLocationPermission
 import com.example.run.presentation.util.hasNotificationPermission
 import com.example.run.presentation.util.shouldShowLocationPermissionRationale
@@ -115,7 +124,7 @@ private fun ActiveRunScreen(
         )
 
         if(!showLocationRationale && !showNotificationRationale) {
-            permissionLauncher.requestRuniquePermissions(context)
+            permissionLauncher.requestRunikPermissions(context)
         }
     }
 
@@ -154,6 +163,30 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+            TrackerMap(
+                isRunFinished = state.isRunFinished,
+                currentLocation = state.currentLocation,
+                locations = state.runData.locations,
+                onSnapshot = {},
+                modifier = Modifier.fillMaxSize()
+            )
+
+            Box(
+                modifier = Modifier
+                    .size(35.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .align(Alignment.Center),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = RunIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp).align(Alignment.Center)
+                )
+            }
+
             RunDataCard(
                 elapsedTime = state.elapsedTime,
                 runData = state.runData,
@@ -163,6 +196,36 @@ private fun ActiveRunScreen(
                     .fillMaxWidth()
             )
         }
+    }
+
+    if (!state.shouldTrack && state.hasStartedRunning) {
+        RunikDialog(
+            title = stringResource(id = R.string.running_is_paused),
+            onDismiss = {
+                onAction(ActiveRunAction.OnResumeRunClick)
+            },
+            description = stringResource(id = R.string.resume_or_finish_run),
+            primaryButton = {
+                RunikActionButton(
+                    text = stringResource(id = R.string.resume),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnResumeRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            },
+            secondaryButton = {
+                RunikOutlinedActionButton(
+                    text = stringResource(id = R.string.finish),
+                    isLoading = state.isSavingRun,
+                    onClick = {
+                        onAction(ActiveRunAction.OnFinishRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        )
     }
 
     if (state.showLocationRationale || state.showNotificationRationale) {
@@ -186,7 +249,7 @@ private fun ActiveRunScreen(
                     isLoading = false,
                     onClick = {
                         onAction(ActiveRunAction.DismissRationaleDialog)
-                        permissionLauncher.requestRuniquePermissions(context)
+                        permissionLauncher.requestRunikPermissions(context)
                     }
                 )
             }
@@ -195,7 +258,7 @@ private fun ActiveRunScreen(
 
 }
 
-private fun ActivityResultLauncher<Array<String>>.requestRuniquePermissions(
+private fun ActivityResultLauncher<Array<String>>.requestRunikPermissions(
     context: Context
 ) {
     val hasLocationPermission = context.hasLocationPermission()

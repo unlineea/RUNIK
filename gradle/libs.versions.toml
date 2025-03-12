@@ -39,6 +39,9 @@ kotlinx-serialization = "1.6.3"
 secretsPlugin = "2.0.1"
 playServicesMaps = "19.0.0"
 annotation = "1.8.2"
+# here we went a different way because i could get my hands on a googleMaps API
+osmdroidAndroid = "6.1.16"
+utsmankece = "0.0.5"
 
 # Project versions
 projectApplicationId = "com.example.runik"
@@ -106,6 +109,10 @@ android-tools-common = { group = "com.android.tools", name = "common", version.r
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+
+#OSMdroid + OSMdroidCompose
+osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
+osm-android-compose = {module = "tech.utsmankece:osm-android-compose", version.ref = "utsmankece"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
