@@ -32,7 +32,8 @@ class RunningTracker(
 
     // this state shows that we are actively tracking users location
     // associating it with some active run and saving info
-    private val isTracking = MutableStateFlow(false)
+    private val _isTracking = MutableStateFlow(false)
+    val isTracking = _isTracking.asStateFlow()
 
     // this state shows that we are just observing the user's location
     private val isObservingLocation = MutableStateFlow(false)
@@ -53,7 +54,7 @@ class RunningTracker(
         )
 
     init {
-        isTracking
+        _isTracking
             .onEach { isTracking ->
                 if(!isTracking) {
                     val newList = buildList {
@@ -77,7 +78,7 @@ class RunningTracker(
 
         currentLocation
             .filterNotNull()
-            .combineTransform(isTracking) { location, isTracking ->
+            .combineTransform(_isTracking) { location, isTracking ->
                 if(isTracking) {
                     emit(location)
                 }
@@ -119,7 +120,7 @@ class RunningTracker(
     }
 
     fun setIsTracking(isTracking: Boolean) {
-        this.isTracking.value = isTracking
+        this._isTracking.value = isTracking
     }
 
     fun startObservingLocation() {

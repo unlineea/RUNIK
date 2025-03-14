@@ -41,6 +41,7 @@ import com.example.core.presentation.designsystem.components.RunikActionButton
 import com.example.core.presentation.designsystem.components.RunikDialog
 import com.example.core.presentation.designsystem.components.RunikOutlinedActionButton
 import com.example.run.presentation.active_run.maps.TrackerMap
+import com.example.run.presentation.active_run.service.ActiveRunService
 import com.example.run.presentation.util.hasLocationPermission
 import com.example.run.presentation.util.hasNotificationPermission
 import com.example.run.presentation.util.shouldShowLocationPermissionRationale
@@ -50,6 +51,8 @@ import com.example.run.presentation.util.shouldShowNotificationPermissionRationa
 
 fun ActiveRunScreenRoot(
 
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
+
     viewModel: ActiveRunViewmodel = koinViewModel()
 
 ) {
@@ -57,6 +60,8 @@ fun ActiveRunScreenRoot(
     ActiveRunScreen(
 
         state = viewModel.state,
+
+        onServiceToggle = onServiceToggle,
 
         onAction = viewModel::onAction
 
@@ -70,6 +75,8 @@ fun ActiveRunScreenRoot(
 private fun ActiveRunScreen(
 
     state: ActiveRunState,
+
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
 
     onAction: (ActiveRunAction) -> Unit
 
@@ -125,6 +132,18 @@ private fun ActiveRunScreen(
 
         if(!showLocationRationale && !showNotificationRationale) {
             permissionLauncher.requestRunikPermissions(context)
+        }
+    }
+
+    LaunchedEffect(key1 = state.isRunFinished) {
+        if(state.isRunFinished) {
+            onServiceToggle(false)
+        }
+    }
+
+    LaunchedEffect(key1 = state.shouldTrack) {
+        if(context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+            onServiceToggle(true)
         }
     }
 
@@ -289,11 +308,9 @@ private fun ActiveRunScreenPreview() {
     RunikTheme {
 
         ActiveRunScreen(
-
             state = ActiveRunState(),
-
+            onServiceToggle = {},
             onAction = {}
-
         )
 
     }
