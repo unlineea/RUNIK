@@ -8,6 +8,7 @@ android {
 
 dependencies {
 
+    implementation(libs.coil.compose)
     implementation(libs.timber)
 
     implementation(projects.core.domain)
