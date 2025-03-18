@@ -1,6 +1,7 @@
 package com.example.run.presentation.active_run.maps
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,8 +21,15 @@ import com.utsman.osmandcompose.rememberCameraState
 import com.utsman.osmandcompose.rememberOverlayManagerState
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.CopyrightOverlay
+import androidx.core.graphics.createBitmap
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TrackerMap(
     modifier: Modifier = Modifier,
@@ -30,6 +38,16 @@ fun TrackerMap(
     locations: List<List<LocationTimestamp>>,
     onSnapshot: (Bitmap) -> Unit
 ) {
+    var createSnapshotJob: Job? = remember {
+        null
+    }
+
+    var triggerCapture by remember {
+        mutableStateOf(true)
+    }
+
+    var mapInstance: MapView? by remember { mutableStateOf(null) }
+
     val context = LocalContext.current
 
     val cameraState = rememberCameraState {
@@ -50,8 +68,6 @@ fun TrackerMap(
 
     SideEffect {
         mapProperties = mapProperties
-//            .copy(maxZoomLevel = 17.0)
-//            .copy(minZoomLevel = 17.0)
             .copy(isTilesScaledToDpi = true)
             .copy(tileSources = TileSourceFactory.MAPNIK)
             .copy(isEnableRotationGesture = false)
@@ -65,10 +81,38 @@ fun TrackerMap(
         properties = mapProperties,
         overlayManagerState = overlayManagerState,
         onFirstLoadListener = {
+            mapInstance = overlayManagerState.getMap()
             val copyright = CopyrightOverlay(context)
             overlayManagerState.overlayManager.add(copyright)
         }
     ) {
         RunikPolylines(locations = locations)
     }
+
+    LaunchedEffect(isRunFinished, createSnapshotJob, locations, triggerCapture) {
+        if (isRunFinished && triggerCapture && createSnapshotJob == null) {
+            triggerCapture = false
+            mapInstance?.let { map ->
+                try {
+                    createSnapshotJob?.cancel()
+                    createSnapshotJob = GlobalScope.launch {
+                        val bitmap = captureMapScreenshot(map)
+                        bitmap.let(onSnapshot)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+}
+
+
+/* Captures the MapView as a Bitmap */
+private fun captureMapScreenshot(mapView: MapView): Bitmap {
+    val bitmap = createBitmap(mapView.width, mapView.height)
+    val canvas = Canvas(bitmap)
+    mapView.draw(canvas)
+
+    return bitmap
 }

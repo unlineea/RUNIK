@@ -6,6 +6,7 @@ import com.example.auth.presentation.di.authViewModelModule
 import com.example.core.data.di.coreDataModule
 import com.example.core.database.di.databaseModule
 import com.example.run.location.di.locationModule
+import com.example.run.network.di.networkModule
 import com.example.run.presentation.di.runPresentationModule
 import com.example.runik.di.appModule
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +38,8 @@ class RunikApp: Application() {
                 coreDataModule,
                 runPresentationModule,
                 locationModule,
-                databaseModule
+                databaseModule,
+                networkModule
             )
         }
     }

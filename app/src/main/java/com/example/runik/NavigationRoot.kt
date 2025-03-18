@@ -121,7 +121,9 @@ private fun NavGraphBuilder.runGraph(navController: NavHostController) {
                             )
                         )
                     }
-                }
+                },
+                onFinish = { navController.navigateUp() },
+                onBack = { navController.navigateUp() }
             )
         }
     }
