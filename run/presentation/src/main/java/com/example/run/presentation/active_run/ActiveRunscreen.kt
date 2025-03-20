@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,13 +42,13 @@ import com.example.core.presentation.designsystem.components.RunikActionButton
 import com.example.core.presentation.designsystem.components.RunikDialog
 import com.example.core.presentation.designsystem.components.RunikOutlinedActionButton
 import com.example.core.presentation.ui.ObserveAsEvents
-import com.example.run.presentation.active_run.maps.TrackerMap
+import com.example.run.presentation.active_run.maps.MapView
 import com.example.run.presentation.active_run.service.ActiveRunService
 import com.example.run.presentation.util.hasLocationPermission
 import com.example.run.presentation.util.hasNotificationPermission
 import com.example.run.presentation.util.shouldShowLocationPermissionRationale
 import com.example.run.presentation.util.shouldShowNotificationPermissionRationale
-import kotlinx.coroutines.flow.flow
+import okhttp3.internal.notifyAll
 import java.io.ByteArrayOutputStream
 
 @Composable
@@ -68,7 +67,7 @@ fun ActiveRunScreenRoot(
                 events.error.asString(context),
                 Toast.LENGTH_LONG
             ).show()
-            ActiveRunEvent.RunSaved -> TODO()
+            ActiveRunEvent.RunSaved -> onFinish()
         }
     }
 
@@ -203,17 +202,17 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            TrackerMap(
+            MapView(
                 isRunFinished = state.isRunFinished,
-                currentLocation = state.currentLocation,
+                userLocation = state.currentLocation,
                 locations = state.runData.locations,
                 onSnapshot = { bmp ->
                     val stream = ByteArrayOutputStream()
-                    stream.use { stream ->
+                    stream.use {
                         bmp.compress(
                             Bitmap.CompressFormat.JPEG,
                             80,
-                            stream
+                            it
                         )
                     }
                     onAction(ActiveRunAction.OnRunProcessed(stream.toByteArray()))
