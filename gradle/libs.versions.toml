@@ -131,6 +131,7 @@ runik-android-library = { id = "runik.android.library", version = "unspecified" 
 runik-android-library-compose = { id = "runik.android.library.compose", version = "unspecified" }
 runik-android-feature-ui = { id = "runik.android.feature.ui", version = "unspecified" }
 runik-android-room = { id = "runik.android.room", version = "unspecified" }
+runik-android-dynamic-feature = { id = "runik.android.dynamic.feature", version = "unspecified" }
 runik-jvm-library = { id = "runik.jvm.library", version = "unspecified" }
 runik-jvm-ktor = { id = "runik.jvm.ktor", version = "unspecified" }
 
