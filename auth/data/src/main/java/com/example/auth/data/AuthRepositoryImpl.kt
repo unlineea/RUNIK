@@ -1,5 +1,6 @@
 package com.example.auth.data
 
+import android.util.Log
 import com.example.auth.domain.AuthRepository
 import com.example.core.data.networking.post
 import com.example.core.domain.AuthInfo
@@ -23,6 +24,10 @@ class AuthRepositoryImpl(
             )
         )
         if (result is Result.Success) {
+            Log.d("authRepoImpl", "setting auth info: \n" +
+                    "accessToken = ${result.data.accessToken},\n" +
+                    "refreshToken = ${result.data.refreshToken},\n" +
+                    "userId = ${result.data.userId}")
             sessionStorage.set(
                 info = AuthInfo(
                     accessToken = result.data.accessToken,

@@ -10,4 +10,13 @@
         </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
+    <application>
+        <activity android:name=".AnalyticsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.RUNIK">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

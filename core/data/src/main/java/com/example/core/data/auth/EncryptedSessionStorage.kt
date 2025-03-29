@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 class EncryptedSessionStorage(
     private val sharedPreferences: SharedPreferences
@@ -17,11 +18,11 @@ class EncryptedSessionStorage(
             json?.let {
                 Json.decodeFromString<AuthInfoSerializable>(it).toAuthInfo()
             }
-
         }
     }
 
     override suspend fun set(info: AuthInfo?) {
+        Timber.d("info: \n ${info.toString()}")
         withContext(Dispatchers.IO) {
             if (info == null) {
                 sharedPreferences.edit().remove(KEY_AUTH_INFO).commit()

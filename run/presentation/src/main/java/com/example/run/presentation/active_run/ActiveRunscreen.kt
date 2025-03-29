@@ -93,13 +93,9 @@ fun ActiveRunScreenRoot(
 @Composable
 
 private fun ActiveRunScreen(
-
     state: ActiveRunState,
-
     onServiceToggle: (isServiceRunning: Boolean) -> Unit,
-
     onAction: (ActiveRunAction) -> Unit
-
 ) {
     val context = LocalContext.current
     val permissionLauncher = rememberLauncherForActivityResult(

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.runik.android.library)
+    alias((libs.plugins.runik.android.room))
 }
 
 android {
